@@ -6,6 +6,11 @@
 <title>AR-ROBITU FOUNDATION</title>
 <meta name="description" content="Unity, Trust & Sustainable Economic Development">
 <link rel="icon" href="assets/logo.jpg">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#3AAEF0">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AR-ROBITU">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
@@ -253,6 +258,7 @@ saveset(){run(async()=>{const links=[1,2].map(i=>({t:val('l_t'+i),u:val('l_u'+i)
   await loadCfg()})}
 };
 boot();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
 </html>

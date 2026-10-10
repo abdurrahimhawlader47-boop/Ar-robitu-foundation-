@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AR-ROBITU FOUNDATION</title>
+<meta name="description" content="Unity, Trust & Sustainable Economic Development">
+<link rel="icon" href="assets/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<style>
+:root{--bg:#DDF1FC;--g:rgba(255,255,255,.52);--gl:rgba(255,255,255,.8);--ink:#0D2B40;--mu:#4F7088;--sky:#3AAEF0;--deep:#0A5A8E;--soft:rgba(58,174,240,.16);--o1:#7CCBF7;--o2:#B9E5FC;--o3:#5AB8EE;--ok:#0F7A5C;--wn:#9A5F12;--er:#B3261E}
+@media (prefers-color-scheme:dark){:root{--bg:#061A28;--g:rgba(20,64,92,.45);--gl:rgba(138,211,250,.28);--ink:#E6F4FD;--mu:#9CC1D6;--deep:#8AD3FA;--soft:rgba(58,174,240,.22);--o1:#0F5C8C;--o2:#123F5E;--o3:#1578B5;--ok:#5FE0B8;--wn:#F2B774;--er:#FF8A80}}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;line-height:1.55}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(420px 420px at 5% 5%,var(--o1),transparent 70%),radial-gradient(520px 520px at 100% 35%,var(--o3),transparent 70%),radial-gradient(460px 460px at 15% 100%,var(--o2),transparent 70%)}
+#app{max-width:720px;margin:auto;padding:14px 14px 60px}
+.card,.top button,.tabs button,input,select,textarea{background:var(--g);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);border:1px solid var(--gl);box-shadow:0 8px 26px rgba(40,140,210,.14),inset 0 1px 0 rgba(255,255,255,.5)}
+.card{border-radius:22px;padding:14px;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.top .brand{display:flex;gap:10px;align-items:center}.top img{width:42px;height:42px;border-radius:12px;object-fit:cover}
+.top b{font-size:16px;display:block;line-height:1.2}.top small{color:var(--mu);font-size:11px}
+.top button,.tabs button{border-radius:99px;padding:6px 13px;color:var(--ink);font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding:2px 0 6px}
+.tabs button.on{background:var(--sky);color:#fff;border-color:var(--sky);font-weight:600}
+.hero{text-align:center;padding:22px 14px}.hero img{width:140px;border-radius:20px;margin-bottom:6px}
+h1{font-size:23px;line-height:1.25}h2{font-size:17px;margin:0 0 6px;color:var(--deep)}h3{font-size:15px;margin:14px 0 6px}
+.mu{color:var(--mu);font-size:13px}.big{font-size:22px;font-weight:700;color:var(--deep)}
+.row{display:flex;gap:10px}.row>*{flex:1}.gr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.gr .card{margin:0}
+.pc{text-align:center}.ph{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;display:block;margin-bottom:6px;background:var(--soft)}
+.av{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--gl);flex:none}
+input,select,textarea{width:100%;border-radius:13px;padding:10px;font:inherit;color:var(--ink);margin:3px 0 8px}
+label{font-size:12.5px;color:var(--mu)}
+.btn{border:0;border-radius:14px;background:linear-gradient(135deg,var(--deep),var(--sky));color:#fff;font:inherit;font-weight:600;padding:10px 16px;cursor:pointer;margin:2px 6px 2px 0;text-decoration:none;display:inline-block}
+.btn.s{background:var(--soft);color:var(--deep)}.btn.d{background:var(--er)}
+.chip{display:inline-block;font-size:11.5px;padding:2px 10px;border-radius:99px;background:var(--soft);color:var(--deep);font-weight:600}
+.chip.ok{color:var(--ok)}.chip.w{color:var(--wn)}.chip.e{color:var(--er)}
+.li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--gl);font-size:14px}
+.bar{height:8px;border-radius:9px;background:var(--soft);overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sky),#8AD3FA)}
+.tl{list-style:none;padding:0;margin:8px 0 0 7px;border-left:2px solid var(--gl)}
+.tl li{position:relative;padding:0 0 7px 16px;font-size:13px;color:var(--mu)}
+.tl li:before{content:"";position:absolute;left:-7px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--gl);border:2px solid var(--gl)}
+.tl li.d{color:var(--ink)}.tl li.d:before{background:var(--sky);border-color:var(--sky)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
+@media(min-width:600px){.gr{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div id="app"><div class="card">Loading…</div></div>
+<script>
+const C=window.ARF||{};
+const sb=supabase.createClient(C.URL,C.KEY);
+const $=s=>document.querySelector(s), g=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S={l:'bn',user:null,prof:null,cfg:{},tab:'home',sub:'apps',al:'',sm:null};
+const T=(b,e)=>S.l=='en'?e:b;
+const tk=n=>'৳ '+Number(n||0).toLocaleString(S.l=='en'?'en-US':'bn-BD');
+const val=id=>(g(id)?.value||'').trim();
+const q=async p=>{const r=await p;if(r.error)throw r.error;return r.data};
+const STAFF=['super_admin','president','general_secretary','treasurer','shariah_advisor'];
+const isStaff=()=>S.prof&&S.prof.status=='active'&&STAFF.includes(S.prof.role);
+const isMember=()=>S.prof&&S.prof.status=='active';
+const GROUPS=()=>[['permanent',T('স্থায়ী সদস্য','Permanent members')],['member',T('সদস্য','Members')],['temporary',T('অস্থায়ী সদস্য','Temporary members')]];
+const ALB=[['Foundation Events','ফাউন্ডেশন অনুষ্ঠান'],['Anniversary Programs','বার্ষিক অনুষ্ঠান'],['Monthly Meetings','মাসিক সভা'],['Social Activities','সামাজিক কার্যক্রম'],['Investment Projects','বিনিয়োগ প্রকল্প'],['Member Activities','সদস্য কার্যক্রম'],['Historical Moments','ঐতিহাসিক মুহূর্ত']];
+const STEPS=[['Proposal','প্রস্তাব'],['Discussion','আলোচনা'],['Feasibility','সম্ভাব্যতা যাচাই'],['Shariah review','শরিয়াহ পর্যালোচনা'],['Approval','অনুমোদন'],['Initiation','বিনিয়োগ শুরু'],['Execution','বাস্তবায়ন'],['Progress updates','অগ্রগতি আপডেট'],['Financial review','আর্থিক পর্যালোচনা'],['Completion','সমাপ্তি']];
+const toast=m=>{const t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--deep);color:#fff;padding:9px 16px;border-radius:99px;font-size:13px;z-index:9;max-width:90%';document.body.appendChild(t);setTimeout(()=>t.remove(),3000)};
+const img=(u,c)=>u?`<img class="${c}" src="${esc(u)}" alt="" loading="lazy">`:`<div class="${c}"></div>`;
+const chip=s=>{const m={verified:['ok',T('যাচাইকৃত','Verified')],submitted:['w',T('যাচাই বাকি','Pending')],rejected:['e',T('বাতিল','Rejected')]}[s]||['',s];return `<span class="chip ${m[0]}">${m[1]}</span>`};
+const field=(id,l,t='text',v='')=>`<label>${l}</label><input id="${id}" type="${t}" value="${esc(v)}">`;
+
+async function shrink(f,max=1000){const u=URL.createObjectURL(f);const im=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u});const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);return new Promise(r=>c.toBlob(r,'image/jpeg',.85))}
+async function upload(f,folder){const path=`${folder}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.jpg`;const b=await shrink(f);const {error}=await sb.storage.from('public-media').upload(path,b,{contentType:'image/jpeg'});if(error)throw error;return sb.storage.from('public-media').getPublicUrl(path).data.publicUrl}
+
+async function loadCfg(){try{const d=await q(sb.from('site_settings').select('*'));S.cfg=Object.fromEntries(d.map(x=>[x.key,x.value]))}catch(e){S.cfg={}}}
+async function loadProf(){S.prof=null;if(!S.user)return;try{S.prof=await q(sb.from('profiles').select('*').eq('id',S.user.id).single())}catch(e){}}
+async function boot(){
+ if(!C.URL||C.URL.includes('YOUR-PROJECT')){$('#app').innerHTML='<div class="card"><b>config.js</b> ফাইলে Supabase URL ও KEY বসান / Fill in config.js</div>';return}
+ const {data}=await sb.auth.getSession();S.user=data.session?.user||null;
+ await Promise.all([loadProf(),loadCfg()]);
+ S.tab=location.hash.slice(1)||'home';shell();
+ sb.auth.onAuthStateChange((ev,s)=>{setTimeout(async()=>{const nu=s?.user||null;if((nu?.id)!==(S.user?.id)){S.user=nu;await loadProf();shell()}},0)});
+}
+function tabsList(){
+ const t=[['home',T('হোম','Home')],['ppl',T('সদস্য','Members')],['med',T('মিডিয়া','Media')],['dep',T('জমা','Deposits')],['not',T('নোটিশ','Notices')],['stm',T('হিসাব','Accounts')]];
+ if(isMember())t.push(['inv',T('বিনিয়োগ','Investments')]);
+ if(!S.user)t.push(['join',T('সদস্য আবেদন','Join')]);
+ if(isStaff())t.push(['adm',T('অ্যাডমিন','Admin')]);
+ return t}
+function shell(){
+ const t=tabsList();if(!t.find(x=>x[0]==S.tab)&&!['login','acode'].includes(S.tab))S.tab='home';
+ $('#app').innerHTML=`<div class="top"><div class="brand"><img src="assets/logo.jpg" alt=""><div><b>AR-ROBITU FOUNDATION</b><small>Unity, Trust &amp; Sustainable Economic Development</small></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button onclick="A.lang()">${S.l=='bn'?'English':'বাংলা'}</button>${S.user?`<button onclick="A.out()">${T('লগ আউট','Log out')}</button>`:`<button onclick="A.go('login')">${T('লগইন','Log in')}</button><button onclick="A.go('acode')">${T('অ্যাডমিন','Admin')}</button>`}</div></div>
+ <div class="tabs">${t.map(x=>`<button class="${S.tab==x[0]?'on':''}" onclick="A.go('${x[0]}')">${x[1]}</button>`).join('')}</div><div id="v"><div class="card">…</div></div>`;
+ show()}
+async function show(){try{$('#v').innerHTML=await V[S.tab]()}catch(e){$('#v').innerHTML=`<div class="card">${esc(e.message||e)}</div>`}}
+const links=()=>(S.cfg.links||[]).filter(l=>/^https?:\/\//i.test(l.u||'')).map(l=>`<a class="btn s" style="display:block;text-align:center;margin:0 0 10px" href="${esc(l.u)}" target="_blank" rel="noopener noreferrer">${esc(l.t||l.u)}</a>`).join('');
+const bk=()=>{const b=S.cfg.bkash||{};return `<div class="card"><h2>${T('টাকা জমা দিন (বিকাশ)','Send money (bKash)')}</h2><div class="big">${esc(b.number||'-')}</div><div class="mu">${T('অর্থ সম্পাদক','Treasurer')}: ${esc(b.treasurer||'-')}</div><p class="mu" style="margin-top:6px">${T('বিকাশে টাকা পাঠিয়ে সদস্য লগইন করে ট্রানজ্যাকশন আইডি দিন। অর্থ সম্পাদক বিকাশের হিসাবের সাথে মিলিয়ে যাচাই করলে নাম ও পরিমাণ নিচের তালিকায় যুক্ত হবে।','After sending via bKash, log in as a member and enter the transaction ID. Once the treasurer checks it against bKash, your name and amount appear in the list below.')}</p></div>`};
+
+const V={
+async home(){
+ const s=await q(sb.rpc('public_stats'));const N=await q(sb.from('notices').select('*').order('published_at',{ascending:false}).limit(2));
+ return `<div class="card hero"><img src="assets/logo.jpg" alt="logo"><h1>AR-ROBITU FOUNDATION</h1><div class="mu">Unity, Trust &amp; Sustainable Economic Development</div></div>
+ <div class="card"><h2>${T('আমাদের পরিচয়','About us')}</h2><p style="font-size:14.5px">${T('AR-ROBITU FOUNDATION একটি ইসলামী অর্থনৈতিক উন্নয়ন, পারস্পরিক সহযোগিতা, সঞ্চয় ও হালাল বিনিয়োগভিত্তিক সংগঠন। সদস্যদের সম্মিলিত প্রচেষ্টা, আর্থিক স্বচ্ছতা ও পারস্পরিক আস্থার মাধ্যমে আমরা একটি টেকসই প্রতিষ্ঠান গড়ে তুলছি।','AR-ROBITU FOUNDATION is built on Islamic economic development, mutual cooperation, savings and halal investment. Through collective effort, financial transparency and mutual trust we are building a sustainable institution.')}</p></div>
+ ${links()}
+ <div class="row"><div class="card"><div class="mu">${T('মোট সদস্য','Members')}</div><div class="big">${s.members}</div></div><div class="card"><div class="mu">${T('চলমান প্রকল্প','Ongoing projects')}</div><div class="big">${s.ongoing}</div></div></div>
+ <div class="row"><div class="card"><div class="mu">${T('মোট সংগৃহীত','Collected')}</div><div class="big">${tk(s.collected)}</div></div><div class="card"><div class="mu">${T('বর্তমান স্থিতি','Balance')}</div><div class="big">${tk(s.collected-s.spent)}</div></div></div>
+ ${N.map(n=>`<div class="card"><div class="mu">${T('নোটিশ','Notice')}</div><b>${esc(n.title)}</b><p style="font-size:14px">${esc(n.body).slice(0,160)}</p></div>`).join('')}`},
+
+async ppl(){
+ const P=await q(sb.from('people').select('*').order('created_at'));
+ return GROUPS().map(([k,l])=>{const r=P.filter(p=>p.grp==k);return `<h3>${l} (${r.length})</h3>`+(r.length?`<div class="gr">${r.map(p=>`<div class="card pc">${img(p.photo_url,'ph')}<b>${esc(p.name)}</b><div class="mu">${esc(p.designation||'')}</div>${p.phone?`<div class="mu">${esc(p.phone)}</div>`:''}</div>`).join('')}</div>`:`<p class="mu">${T('এখনো যোগ করা হয়নি','Not added yet')}</p>`)}).join('')},
+
+async med(){
+ const M=await q(sb.from('media_items').select('*').order('created_at',{ascending:false}));
+ return `<div class="tabs"><button class="${S.al?'':'on'}" onclick="A.album('')">${T('সব','All')}</button>${ALB.map(a=>`<button class="${S.al==a[0]?'on':''}" onclick="A.album('${a[0]}')">${T(a[1],a[0])}</button>`).join('')}</div>`+
+ (M.filter(m=>!S.al||m.album==S.al).map(m=>`<div class="card">${img(m.url,'ph')}<div class="mu">${esc(m.caption||'')} · ${T((ALB.find(a=>a[0]==m.album)||[])[1],m.album)}</div></div>`).join('')||`<p class="mu">${T('এখনো কোনো ছবি নেই','No photos yet')}</p>`)},
+
+async dep(){
+ const R=await q(sb.rpc('public_receipts'));let mine='';
+ if(isMember()){
+  const my=await q(sb.from('contributions').select('*').eq('member_id',S.user.id).order('month',{ascending:false}));
+  const mm=new Date().toISOString().slice(0,7);
+  mine=`<div class="card"><h2>${T('জমা দিন','Submit a deposit')}</h2>${field('d_m',T('মাস','Month'),'month',mm)+field('d_a',T('পরিমাণ','Amount'),'number',S.prof.monthly_amount||'')+field('d_r',T('বিকাশ ট্রানজ্যাকশন আইডি','bKash transaction ID'))}<button class="btn" onclick="A.deposit()">${T('জমা দিন','Submit')}</button></div>
+  <div class="card"><h2>${T('আমার জমা','My deposits')}</h2>${my.map(c=>`<div class="li"><span>${c.month.slice(0,7)} · ${tk(c.amount)}${c.receipt_no?` <span class="mu">${esc(c.receipt_no)}</span>`:''}</span>${chip(c.status)}</div>`).join('')||`<p class="mu">${T('এখনো কোনো জমা নেই','No deposits yet')}</p>`}</div>`}
+ else if(!S.user)mine=`<div class="card"><p class="mu">${T('জমা দিতে সদস্য হিসেবে লগইন করুন।','Log in as a member to submit a deposit.')}</p><button class="btn" onclick="A.go('login')">${T('লগইন','Log in')}</button><button class="btn s" onclick="A.go('join')">${T('সদস্য আবেদন','Join')}</button></div>`;
+ return bk()+mine+`<h3>${T('জমার তালিকা','Deposit list')}</h3>`+GROUPS().map(([k,l])=>{const r=R.filter(x=>(x.cat||'member')==k);return `<div class="card"><h2>${l} <span class="mu">${tk(r.reduce((a,x)=>a+Number(x.amount),0))}</span></h2>`+(r.map(x=>`<div class="li"><span>${esc(x.name)} <span class="mu">${x.month.slice(0,7)}</span></span><b>${tk(x.amount)}</b></div>`).join('')||`<p class="mu">${T('এখনো কেউ জমা দেয়নি','No deposits yet')}</p>`)+`</div>`}).join('')},
+
+async not(){
+ const N=await q(sb.from('notices').select('*').order('published_at',{ascending:false}));
+ return N.map(n=>`<div class="card"><div class="li" style="border:0;padding:0"><b>${esc(n.title)}</b><span class="chip">${esc(n.kind)}</span></div><p style="font-size:14px;white-space:pre-wrap">${esc(n.body)}</p><div class="mu">${new Date(n.published_at).toLocaleDateString()}</div></div>`).join('')||`<p class="mu">${T('কোনো নোটিশ নেই','No notices')}</p>`},
+
+async stm(){
+ const R=await q(sb.from('monthly_statements').select('*').eq('published',true).order('month',{ascending:false}));
+ return R.map(r=>`<div class="card"><h2>${r.month.slice(0,7)}</h2>${[[T('শুরুর স্থিতি','Opening'),r.opening_balance],[T('আয়','Income'),r.income],[T('ব্যয়','Expense'),r.expense],[T('সমাপনী স্থিতি','Closing'),r.closing_balance]].map(x=>`<div class="li"><span>${x[0]}</span><b>${tk(x[1])}</b></div>`).join('')}<div class="li"><span>${T('জমা দিয়েছেন','Members paid')}</span><b>${r.paid_members} / ${r.active_members}</b></div>${r.note?`<p class="mu">${esc(r.note)}</p>`:''}</div>`).join('')||`<p class="mu">${T('এখনো কোনো হিসাব প্রকাশিত হয়নি','No statements published yet')}</p>`},
+
+async inv(){
+ const I=await q(sb.from('investments').select('*, investment_steps(*)').order('created_at',{ascending:false}));
+ const grp=(t,st)=>{const r=I.filter(i=>st.includes(i.stage));return `<h3>${t}</h3>`+(r.map(i=>{const done=(i.investment_steps||[]).filter(s=>s.status=='done').length;return `<div class="card"><b>${esc(i.title)}</b><div class="mu">${T('মূলধন','Capital')} ${tk(i.capital)} · ${T('ব্যবহৃত','Used')} ${tk(i.amount_used)}</div><div class="bar"><i style="width:${i.progress}%"></i></div><div class="mu">${i.progress}% · ${T('শরিয়াহ','Shariah')}: ${esc(i.shariah)}</div>${i.description?`<p style="font-size:14px">${esc(i.description)}</p>`:''}<ul class="tl">${STEPS.map((s,n)=>`<li class="${n<done?'d':''}">${T(s[1],s[0])}</li>`).join('')}</ul></div>`}).join('')||`<p class="mu">${T('কিছু নেই','Nothing here')}</p>`)};
+ return grp(T('নতুন প্রস্তাব','New proposals'),['proposed','approved'])+grp(T('চলমান','Ongoing'),['ongoing'])+grp(T('পূর্ববর্তী','Previous'),['completed','rejected'])},
+
+async join(){
+ return `<div class="card"><h2>${T('সদস্য আবেদন','Member application')}</h2>${field('r_name',T('পূর্ণ নাম','Full name'))+field('r_father',T('পিতার নাম',"Father's name"))+field('r_mother',T('মাতার নাম',"Mother's name"))+field('r_dob',T('জন্ম তারিখ','Date of birth'),'date')+field('r_phone',T('মোবাইল','Mobile'),'tel')+field('r_addr',T('ঠিকানা','Address'))+field('r_job',T('পেশা','Occupation'))+field('r_nid',T('জাতীয় পরিচয়পত্র নম্বর','National ID'))+field('r_emg',T('জরুরি যোগাযোগ','Emergency contact'),'tel')+field('r_nom',T('নমিনির নাম','Nominee name'))+field('r_rel',T('নমিনির সাথে সম্পর্ক','Nominee relation'))+field('r_email',T('ইমেইল','Email'),'email')+field('r_pass',T('পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)','Password (min 6 characters)'),'password')}<button class="btn" onclick="A.register()">${T('আবেদন জমা দিন','Submit application')}</button><p class="mu">${T('অ্যাডমিন অনুমোদনের পর আপনি লগইন করে জমা দিতে পারবেন।','After admin approval you can log in and submit deposits.')}</p></div>`},
+
+async login(){
+ return `<div class="card"><h2>${T('সদস্য লগইন','Member login')}</h2>${field('l_e',T('ইমেইল','Email'),'email')+field('l_p',T('পাসওয়ার্ড','Password'),'password')}<button class="btn" onclick="A.login()">${T('লগইন','Log in')}</button><button class="btn s" onclick="A.go('join')">${T('নতুন সদস্য?','New member?')}</button></div>`},
+
+async acode(){
+ return `<div class="card"><h2>${T('অ্যাডমিন প্রবেশ','Admin access')}</h2>${field('a_c',T('অ্যাডমিন কোড','Admin code'),'password')}<button class="btn" onclick="A.acode()">${T('প্রবেশ করুন','Enter')}</button><p class="mu">${T('অন্যান্য অ্যাডমিনরা নিজেদের ইমেইল ও পাসওয়ার্ড দিয়ে "লগইন" থেকে ঢুকবেন।','Other admins sign in with their own email and password via Log in.')}</p></div>`},
+
+async adm(){
+ const r=S.prof.role,adm=['super_admin','president','general_secretary'].includes(r),mon=['super_admin','treasurer'].includes(r);
+ const tabs=[...(adm?[['apps',T('আবেদন','Applications')]]:[]),...(mon?[['pay',T('জমা যাচাই','Payments')],['acct',T('হিসাব','Accounts')]]:[]),...(adm?[['cont',T('নোটিশ ও বিনিয়োগ','Notices & investments')],['prof',T('প্রোফাইল ফর্ম','Profile forms')],['mda',T('মিডিয়া আপলোড','Media upload')]]:[]),...(r=='shariah_advisor'?[['shar',T('শরিয়াহ রিভিউ','Shariah review')]]:[]),...(r=='super_admin'?[['team',T('টিম ও রোল','Team & roles')]]:[]),['set',T('সেটিংস ও লিংক','Settings & links')]];
+ if(!tabs.find(t=>t[0]==S.sub))S.sub=tabs[0][0];
+ const p=S.cfg.publicity||{};
+ return `<div class="card" style="display:flex;gap:12px;align-items:center">${img(p.photo||'assets/publicity.jpg','av')}<div><div class="mu">${esc(p.title||'তথ্যপ্রচার সম্পাদক')}</div><b>${esc(p.name||'মো: আব্দুর রহমান হৃদয়')}</b><div class="mu">${T('অ্যাডমিন প্যানেল','Admin panel')}</div></div></div><div class="tabs">${tabs.map(t=>`<button class="${S.sub==t[0]?'on':''}" onclick="A.sub('${t[0]}')">${t[1]}</button>`).join('')}</div>`+await ADM[S.sub]()}
+};
+
+const ADM={
+async apps(){
+ const P=await q(sb.from('profiles').select('*').eq('status','pending').order('created_at'));
+ return P.map(p=>`<div class="card"><b>${esc(p.full_name)}</b>${[['phone',T('মোবাইল','Phone')],['father_name',T('পিতা','Father')],['mother_name',T('মাতা','Mother')],['date_of_birth',T('জন্ম তারিখ','DOB')],['address',T('ঠিকানা','Address')],['occupation',T('পেশা','Occupation')],['national_id','NID'],['emergency_contact',T('জরুরি','Emergency')],['nominee_name',T('নমিনি','Nominee')],['nominee_relation',T('সম্পর্ক','Relation')]].filter(k=>p[k[0]]).map(k=>`<div class="mu">${k[1]}: ${esc(p[k[0]])}</div>`).join('')}
+ ${field('amt_'+p.id,T('মাসিক জমার পরিমাণ','Monthly amount'),'number')}<label>${T('সদস্যের ধরন','Member type')}</label><select id="cat_${p.id}">${GROUPS().map(c=>`<option value="${c[0]}" ${c[0]=='member'?'selected':''}>${c[1]}</option>`).join('')}</select>
+ <button class="btn" data-id="${p.id}" onclick="A.approve(this.dataset.id)">${T('অনুমোদন','Approve')}</button><button class="btn s" data-id="${p.id}" onclick="A.reject(this.dataset.id)">${T('বাতিল','Reject')}</button></div>`).join('')||`<p class="mu">${T('কোনো নতুন আবেদন নেই','No pending applications')}</p>`},
+
+async pay(){
+ const C2=await q(sb.from('contributions').select('*, profiles(full_name,member_no)').eq('status','submitted').order('created_at'));
+ return C2.map(c=>`<div class="card"><b>${esc(c.profiles.full_name)}</b> <span class="mu">${esc(c.profiles.member_no)}</span><div>${c.month.slice(0,7)} · ${tk(c.amount)}</div><div class="mu">${T('ট্রানজ্যাকশন আইডি','Transaction ID')}: ${esc(c.note||'-')}</div><button class="btn" data-id="${c.id}" onclick="A.verify(this.dataset.id)">${T('যাচাই করুন','Verify')}</button><button class="btn s" data-id="${c.id}" onclick="A.rejpay(this.dataset.id)">${T('বাতিল','Reject')}</button></div>`).join('')||`<p class="mu">${T('যাচাইয়ের জন্য কিছু নেই','Nothing to verify')}</p>`},
+
+async acct(){
+ const m=S.sm||new Date().toISOString().slice(0,7);S.sm=m;const d=m+'-01';
+ const st=(await q(sb.from('monthly_statements').select('*').eq('month',d)))[0];
+ const out=await q(sb.rpc('outstanding_members',{p_month:d}));
+ return `<div class="card">${field('s_m',T('মাস','Month'),'month',m).replace('<input','<input onchange="A.month(this.value)"')}<button class="btn" onclick="A.gen()">${T('এই মাসের হিসাব তৈরি/হালনাগাদ','Generate / refresh statement')}</button>
+ ${st?`${[[T('শুরুর স্থিতি','Opening'),st.opening_balance],[T('আয়','Income'),st.income],[T('ব্যয়','Expense'),st.expense],[T('সমাপনী স্থিতি','Closing'),st.closing_balance]].map(x=>`<div class="li"><span>${x[0]}</span><b>${tk(x[1])}</b></div>`).join('')}<div class="li"><span>${T('জমা দিয়েছেন','Paid')}</span><b>${st.paid_members} / ${st.active_members}</b></div>${st.published?`<span class="chip ok">${T('প্রকাশিত','Published')}</span>`:`${field('s_n',T('মন্তব্য (ঐচ্ছিক)','Note (optional)'))}<button class="btn" onclick="A.publish()">${T('সবার জন্য প্রকাশ করুন','Publish')}</button>`}`:`<p class="mu">${T('এই মাসের হিসাব এখনো তৈরি হয়নি','Not generated yet')}</p>`}</div>
+ <div class="card"><h2>${T('আয়/ব্যয় যোগ করুন','Add income / expense')}</h2><select id="t_k"><option value="income">${T('আয়','Income')}</option><option value="expense">${T('ব্যয়','Expense')}</option></select>${field('t_c',T('খাত','Category'))+field('t_a',T('পরিমাণ','Amount'),'number')+field('t_d',T('বিবরণ','Description'))}<button class="btn" onclick="A.tx()">${T('সংরক্ষণ','Save')}</button></div>
+ <h3>${T('বকেয়া সদস্য','Outstanding members')} (${out.length})</h3>${out.map(o=>`<div class="li"><span>${esc(o.full_name)} <span class="mu">${esc(o.member_no)}</span></span><span>${tk(o.monthly_amount)}</span></div>`).join('')}`},
+
+async cont(){
+ const I=await q(sb.from('investments').select('*').order('created_at',{ascending:false}));
+ return `<div class="card"><h2>${T('নোটিশ প্রকাশ','Publish a notice')}</h2>${field('n_t',T('শিরোনাম','Title'))}<label>${T('ধরন','Type')}</label><select id="n_k">${['general','meeting','contribution','investment','emergency'].map(x=>`<option>${x}</option>`).join('')}</select><label>${T('বিস্তারিত','Details')}</label><textarea id="n_b" rows="3"></textarea><button class="btn" onclick="A.notice()">${T('প্রকাশ','Publish')}</button></div>
+ <div class="card"><h2>${T('নতুন বিনিয়োগ প্রস্তাব','New investment proposal')}</h2>${field('i_t',T('প্রকল্পের নাম','Project name'))+field('i_d',T('বিবরণ','Description'))+field('i_c',T('প্রস্তাবিত মূলধন','Proposed capital'),'number')+field('i_r',T('সম্ভাব্য ঝুঁকি','Risks'))}<button class="btn" onclick="A.addinv()">${T('যোগ করুন','Add')}</button></div>
+ ${I.map(i=>`<div class="card"><b>${esc(i.title)}</b><label>${T('অবস্থা','Stage')}</label><select id="s_${i.id}">${['proposed','approved','ongoing','completed','rejected'].map(x=>`<option ${x==i.stage?'selected':''}>${x}</option>`).join('')}</select><div class="row"><div>${field('p_'+i.id,T('অগ্রগতি %','Progress %'),'number',i.progress)}</div><div>${field('u_'+i.id,T('ব্যবহৃত অর্থ','Amount used'),'number',i.amount_used)}</div></div><button class="btn s" data-id="${i.id}" onclick="A.updinv(this.dataset.id)">${T('আপডেট','Update')}</button></div>`).join('')}`},
+
+async prof(){
+ const P=await q(sb.from('people').select('*').order('created_at'));
+ return `<div class="card"><h2>${T('প্রোফাইল যোগ করুন','Add a profile')}</h2><label>${T('বিভাগ','Section')}</label><select id="p_g">${GROUPS().map(c=>`<option value="${c[0]}">${c[1]}</option>`).join('')}</select>${field('p_n',T('নাম','Name'))+field('p_r',T('পদবি / পরিচয়','Designation'))+field('p_p',T('মোবাইল','Phone'),'tel')+field('p_a',T('ঠিকানা','Address'))}<label>${T('ছবি','Photo')}</label><input id="p_f" type="file" accept="image/*"><button class="btn" onclick="A.addp()">${T('সংরক্ষণ ও প্রকাশ','Save & publish')}</button><p class="mu">${T('স্থায়ী সদস্য সর্বোচ্চ ১০ জন।','Up to 10 permanent members.')}</p></div>`+
+ GROUPS().map(([k,l])=>`<h3>${l}</h3>`+P.filter(p=>p.grp==k).map(p=>`<div class="card" style="display:flex;gap:10px;align-items:center">${img(p.photo_url,'av')}<div style="flex:1"><b>${esc(p.name)}</b><div class="mu">${esc(p.designation||'')}</div></div><button class="btn d" data-id="${p.id}" onclick="A.delp(this.dataset.id)">${T('মুছুন','Delete')}</button></div>`).join('')).join('')},
+
+async mda(){
+ const M=await q(sb.from('media_items').select('*').order('created_at',{ascending:false}));
+ return `<div class="card"><h2>${T('ছবি আপলোড','Upload photos')}</h2><label>${T('অ্যালবাম','Album')}</label><select id="m_al">${ALB.map(a=>`<option value="${a[0]}">${T(a[1],a[0])}</option>`).join('')}</select>${field('m_c',T('ক্যাপশন','Caption'))}<label>${T('ছবি (একসাথে একাধিক)','Photos (several at once)')}</label><input id="m_f" type="file" accept="image/*" multiple><button class="btn" onclick="A.addm()">${T('আপলোড','Upload')}</button></div>`+
+ M.map(m=>`<div class="card" style="display:flex;gap:10px;align-items:center">${img(m.url,'av')}<div style="flex:1" class="mu">${esc(m.caption||'')}<br>${esc(m.album)}</div><button class="btn d" data-id="${m.id}" onclick="A.delm(this.dataset.id)">${T('মুছুন','Delete')}</button></div>`).join('')},
+
+async shar(){
+ const I=await q(sb.from('investments').select('*').order('created_at',{ascending:false}));
+ return I.map(i=>`<div class="card"><b>${esc(i.title)}</b><label>${T('শরিয়াহ অবস্থা','Shariah status')}</label><select id="sh_${i.id}">${['pending','approved','changes_required'].map(x=>`<option ${x==i.shariah?'selected':''}>${x}</option>`).join('')}</select>${field('sn_'+i.id,T('মতামত','Note'),'text',i.shariah_note||'')}<button class="btn s" data-id="${i.id}" onclick="A.shariah(this.dataset.id)">${T('সংরক্ষণ','Save')}</button></div>`).join('')},
+
+async team(){
+ const P=await q(sb.from('profiles').select('*').neq('status','pending').order('full_name'));
+ const R=['super_admin','president','general_secretary','treasurer','shariah_advisor','member'];
+ return `<div class="card"><p class="mu">${T('যে সদস্যকে অ্যাডমিন বানাতে চান তার রোল বদলে দিন। তিনি নিজের ইমেইল-পাসওয়ার্ডে লগইন করলেই অ্যাডমিন প্যানেল পাবেন।','Change a member\'s role to make them an admin. They sign in with their own email and password to get the admin panel.')}</p></div>`+
+ P.map(p=>`<div class="card li" style="border:0"><div><b>${esc(p.full_name)}</b><div class="mu">${esc(p.member_no)} · ${p.status}</div></div><div><select data-id="${p.id}" onchange="A.role(this.dataset.id,this.value)">${R.map(x=>`<option ${x==p.role?'selected':''}>${x}</option>`).join('')}</select><button class="btn s" data-id="${p.id}" data-s="${p.status=='active'?'suspended':'active'}" onclick="A.status(this.dataset.id,this.dataset.s)">${p.status=='active'?T('স্থগিত','Suspend'):T('সক্রিয়','Activate')}</button></div></div>`).join('')},
+
+async set(){
+ const b=S.cfg.bkash||{},L=S.cfg.links||[],p=S.cfg.publicity||{};
+ return `<div class="card"><h2>${T('বিকাশ ও অর্থ সম্পাদক','bKash & treasurer')}</h2>${field('b_n',T('বিকাশ নম্বর','bKash number'),'tel',b.number||'')+field('b_t',T('অর্থ সম্পাদকের নাম','Treasurer name'),'text',b.treasurer||'')}</div>
+ <div class="card"><h2>${T('দুটি লিংক','Two links')}</h2>${field('l_t1',T('লিংক ১ নাম','Link 1 title'),'text',L[0]?.t||'')+field('l_u1',T('লিংক ১ ঠিকানা (https://...)','Link 1 URL (https://...)'),'url',L[0]?.u||'')+field('l_t2',T('লিংক ২ নাম','Link 2 title'),'text',L[1]?.t||'')+field('l_u2',T('লিংক ২ ঠিকানা (https://...)','Link 2 URL (https://...)'),'url',L[1]?.u||'')}</div>
+ <div class="card"><h2>${T('অ্যাডমিন প্যানেলের পরিচয়','Admin panel identity')}</h2>${field('pr_t',T('পদবি','Title'),'text',p.title||'তথ্যপ্রচার সম্পাদক')+field('pr_n',T('নাম','Name'),'text',p.name||'মো: আব্দুর রহমান হৃদয়')}<label>${T('নতুন ছবি (ঐচ্ছিক)','New photo (optional)')}</label><input id="pr_f" type="file" accept="image/*"></div>
+ <button class="btn" onclick="A.saveset()">${T('সংরক্ষণ','Save')}</button>`}
+};
+
+const run=async(f,msg)=>{try{const r=await f();if(r&&r.error)throw r.error;toast(msg||T('সম্পন্ন হয়েছে','Done'));await show()}catch(e){toast(e.message||String(e))}};
+const set1=(k,v)=>sb.from('site_settings').upsert({key:k,value:v});
+
+const A={
+lang(){S.l=S.l=='bn'?'en':'bn';document.documentElement.lang=S.l;shell()},
+go(t){S.tab=t;location.hash=t;shell()},
+sub(t){S.sub=t;show()},
+album(a){S.al=a;show()},
+month(v){S.sm=v;show()},
+async out(){await sb.auth.signOut();S.user=null;S.prof=null;S.tab='home';shell()},
+async login(){try{const {error}=await sb.auth.signInWithPassword({email:val('l_e'),password:val('l_p')});if(error)throw error;S.tab='home';await new Promise(r=>setTimeout(r,300));const {data}=await sb.auth.getSession();S.user=data.session?.user;await loadProf();shell()}catch(e){toast(e.message)}},
+async acode(){try{const {error}=await sb.auth.signInWithPassword({email:C.ADMIN_EMAIL,password:val('a_c')});if(error)throw new Error(T('কোড সঠিক নয়','Incorrect code'));const {data}=await sb.auth.getSession();S.user=data.session.user;await loadProf();if(!isStaff()){await sb.auth.signOut();S.user=null;S.prof=null;throw new Error(T('এই অ্যাকাউন্টে অ্যাডমিন অনুমতি নেই','This account has no admin permission'))}S.tab='adm';shell()}catch(e){toast(e.message)}},
+async register(){
+ const d={full_name:val('r_name'),father_name:val('r_father'),mother_name:val('r_mother'),date_of_birth:val('r_dob'),phone:val('r_phone'),address:val('r_addr'),occupation:val('r_job'),national_id:val('r_nid'),emergency_contact:val('r_emg'),nominee_name:val('r_nom'),nominee_relation:val('r_rel')};
+ if(!d.full_name||!d.phone||!val('r_email')||val('r_pass').length<6)return toast(T('নাম, মোবাইল, ইমেইল ও ৬+ অক্ষরের পাসওয়ার্ড দিন','Enter name, mobile, email and a 6+ character password'));
+ try{const {error}=await sb.auth.signUp({email:val('r_email'),password:val('r_pass'),options:{data:d}});if(error)throw error;toast(T('আবেদন জমা হয়েছে। অনুমোদনের পর লগইন করুন।','Submitted. Log in after approval.'));await sb.auth.signOut();S.user=null;S.prof=null;S.tab='home';shell()}catch(e){toast(e.message)}},
+async deposit(){const a=Number(val('d_a')),m=val('d_m');if(!a||!m)return toast(T('মাস ও পরিমাণ দিন','Enter month and amount'));
+ run(()=>sb.from('contributions').insert({member_id:S.user.id,month:m+'-01',amount:a,note:val('d_r')}),T('জমা হয়েছে, যাচাইয়ের অপেক্ষায়','Submitted, waiting for verification'))},
+approve(id){run(()=>sb.from('profiles').update({status:'active',monthly_amount:Number(val('amt_'+id))||0,cat:g('cat_'+id).value}).eq('id',id))},
+reject(id){run(()=>sb.from('profiles').update({status:'inactive'}).eq('id',id))},
+verify(id){run(()=>sb.rpc('approve_contribution',{p_id:id}))},
+rejpay(id){run(()=>sb.rpc('reject_contribution',{p_id:id,p_note:'rejected'}))},
+gen(){run(()=>sb.rpc('generate_monthly_statement',{p_month:S.sm+'-01'}))},
+publish(){run(()=>sb.rpc('publish_monthly_statement',{p_month:S.sm+'-01',p_note:val('s_n')||null}))},
+tx(){const a=Number(val('t_a'));if(!a||!val('t_c'))return toast(T('খাত ও পরিমাণ দিন','Enter category and amount'));run(()=>sb.from('transactions').insert({kind:g('t_k').value,category:val('t_c'),amount:a,description:val('t_d'),approved_by:S.user.id,created_by:S.user.id}))},
+notice(){if(!val('n_t')||!val('n_b'))return toast(T('শিরোনাম ও বিবরণ দিন','Enter title and details'));run(()=>sb.from('notices').insert({title:val('n_t'),body:val('n_b'),kind:g('n_k').value,created_by:S.user.id}))},
+addinv(){if(!val('i_t'))return;run(async()=>{const r=await sb.from('investments').insert({title:val('i_t'),description:val('i_d'),capital:Number(val('i_c'))||0,risks:val('i_r'),created_by:S.user.id}).select().single();if(r.error)return r;return sb.from('investment_steps').insert(STEPS.map((s,i)=>({investment_id:r.data.id,step_no:i+1,title:s[0],status:i==0?'current':'pending'})))})},
+updinv(id){run(()=>sb.from('investments').update({stage:g('s_'+id).value,progress:Math.min(100,Number(val('p_'+id))||0),amount_used:Number(val('u_'+id))||0}).eq('id',id))},
+shariah(id){run(()=>sb.from('investments').update({shariah:g('sh_'+id).value,shariah_note:val('sn_'+id)}).eq('id',id))},
+role(id,r){run(()=>sb.from('profiles').update({role:r}).eq('id',id))},
+status(id,s){run(()=>sb.from('profiles').update({status:s}).eq('id',id))},
+addp(){const gp=g('p_g').value,n=val('p_n');if(!n)return toast(T('নাম দিন','Enter a name'));
+ run(async()=>{if(gp=='permanent'){const c=await sb.from('people').select('id',{count:'exact',head:true}).eq('grp','permanent');if((c.count||0)>=10)throw new Error(T('স্থায়ী সদস্য সর্বোচ্চ ১০ জন','Maximum 10 permanent members'))}
+  const f=g('p_f').files[0];const url=f?await upload(f,'people'):null;return sb.from('people').insert({grp:gp,name:n,designation:val('p_r'),phone:val('p_p'),address:val('p_a'),photo_url:url})})},
+delp(id){run(()=>sb.from('people').delete().eq('id',id))},
+addm(){run(async()=>{const fs=g('m_f').files;if(!fs.length)throw new Error(T('ছবি বাছাই করুন','Choose photos'));for(const f of fs){const url=await upload(f,'media');const r=await sb.from('media_items').insert({album:g('m_al').value,caption:val('m_c'),url});if(r.error)throw r.error}})},
+delm(id){run(()=>sb.from('media_items').delete().eq('id',id))},
+saveset(){run(async()=>{const links=[1,2].map(i=>({t:val('l_t'+i),u:val('l_u'+i)})).filter(x=>x.u);const old=S.cfg.publicity||{};let photo=old.photo||'assets/publicity.jpg';const f=g('pr_f').files[0];if(f)photo=await upload(f,'admin');
+  for(const [k,v] of [['bkash',{number:val('b_n'),treasurer:val('b_t')}],['links',links],['publicity',{title:val('pr_t'),name:val('pr_n'),photo}]]){const r=await set1(k,v);if(r.error)throw r.error}
+  await loadCfg()})}
+};
+boot();
+</script>
+</body>
+</html>

@@ -66,13 +66,14 @@ const ALB=[['Foundation Events','ফাউন্ডেশন অনুষ্ঠ�
 const STEPS=[['Proposal','প্রস্তাব'],['Discussion','আলোচনা'],['Feasibility','সম্ভাব্যতা যাচাই'],['Shariah review','শরিয়াহ পর্যালোচনা'],['Approval','অনুমোদন'],['Initiation','বিনিয়োগ শুরু'],['Execution','বাস্তবায়ন'],['Progress updates','অগ্রগতি আপডেট'],['Financial review','আর্থিক পর্যালোচনা'],['Completion','সমাপ্তি']];
 const toast=m=>{const t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--deep);color:#fff;padding:9px 16px;border-radius:99px;font-size:13px;z-index:9;max-width:90%';document.body.appendChild(t);setTimeout(()=>t.remove(),3000)};
 const img=(u,c)=>u?`<img class="${c}" src="${esc(u)}" alt="" loading="lazy">`:`<div class="${c}"></div>`;
+const logoUrl=()=>(S.cfg.logo&&S.cfg.logo.url)||'assets/logo.jpg';
 const chip=s=>{const m={verified:['ok',T('যাচাইকৃত','Verified')],submitted:['w',T('যাচাই বাকি','Pending')],rejected:['e',T('বাতিল','Rejected')]}[s]||['',s];return `<span class="chip ${m[0]}">${m[1]}</span>`};
 const field=(id,l,t='text',v='')=>`<label>${l}</label><input id="${id}" type="${t}" value="${esc(v)}">`;
 
 async function shrink(f,max=1000){const u=URL.createObjectURL(f);const im=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u});const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);return new Promise(r=>c.toBlob(r,'image/jpeg',.85))}
 async function upload(f,folder){const path=`${folder}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.jpg`;const b=await shrink(f);const {error}=await sb.storage.from('public-media').upload(path,b,{contentType:'image/jpeg'});if(error)throw error;return sb.storage.from('public-media').getPublicUrl(path).data.publicUrl}
 
-async function loadCfg(){try{const d=await q(sb.from('site_settings').select('*'));S.cfg=Object.fromEntries(d.map(x=>[x.key,x.value]));S.err=''}catch(e){S.cfg={};S.err=e.message||String(e)}}
+async function loadCfg(){try{const d=await q(sb.from('site_settings').select('*'));S.cfg=Object.fromEntries(d.map(x=>[x.key,x.value]));S.err='';const ic=document.querySelector('link[rel=icon]');if(ic&&S.cfg.logo&&S.cfg.logo.url)ic.href=S.cfg.logo.url}catch(e){S.cfg={};S.err=e.message||String(e)}}
 async function loadProf(){S.prof=null;if(!S.user)return;try{S.prof=await q(sb.from('profiles').select('*').eq('id',S.user.id).single())}catch(e){}}
 async function boot(){
  if(!C.URL||C.URL.includes('YOUR-PROJECT')){$('#app').innerHTML='<div class="card"><b>config.js</b> ফাইলে Supabase URL ও KEY বসান / Fill in config.js</div>';return}
@@ -89,7 +90,7 @@ function tabsList(){
  return t}
 function shell(){
  const t=tabsList();if(!t.find(x=>x[0]==S.tab)&&!['login','acode'].includes(S.tab))S.tab='home';
- $('#app').innerHTML=`<div class="top"><div class="brand"><img src="assets/logo.jpg" alt=""><div><b>AR-ROBITU FOUNDATION</b><small>Unity, Trust &amp; Sustainable Economic Development</small></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button onclick="A.lang()">${S.l=='bn'?'English':'বাংলা'}</button>${S.user?`<button onclick="A.out()">${T('লগ আউট','Log out')}</button>`:`<button onclick="A.go('login')">${T('লগইন','Log in')}</button><button onclick="A.go('acode')">${T('অ্যাডমিন','Admin')}</button>`}</div></div>
+ $('#app').innerHTML=`<div class="top"><div class="brand"><img src="${esc(logoUrl())}" alt=""><div><b>AR-ROBITU FOUNDATION</b><small>Unity, Trust &amp; Sustainable Economic Development</small></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button onclick="A.lang()">${S.l=='bn'?'English':'বাংলা'}</button>${S.user?`<button onclick="A.out()">${T('লগ আউট','Log out')}</button>`:`<button onclick="A.go('login')">${T('লগইন','Log in')}</button><button onclick="A.go('acode')">${T('অ্যাডমিন','Admin')}</button>`}</div></div>
  ${S.err?`<div class="card" style="border-color:var(--er)"><b>${T('ডেটাবেজ সংযোগে সমস্যা','Database connection problem')}</b><div class="mu">${esc(S.err)}</div><div class="mu">${T('setup.sql Run হয়েছে কি না এবং config.js-এর URL/KEY ঠিক আছে কি না দেখুন।','Check that setup.sql was run and the URL/KEY in config.js are correct.')}</div></div>`:''}<div class="tabs">${t.map(x=>`<button class="${S.tab==x[0]?'on':''}" onclick="A.go('${x[0]}')">${x[1]}</button>`).join('')}</div><div id="v"><div class="card">…</div></div>`;
  show()}
 async function show(){try{$('#v').innerHTML=await V[S.tab]()}catch(e){$('#v').innerHTML=`<div class="card">${esc(e.message||e)}</div>`}}
@@ -99,7 +100,7 @@ const bk=()=>{const b=S.cfg.bkash||{};return `<div class="card"><h2>${T('টা�
 const V={
 async home(){
  const s=await q(sb.rpc('public_stats'));const N=await q(sb.from('notices').select('*').order('published_at',{ascending:false}).limit(2));
- return `<div class="card hero"><img src="assets/logo.jpg" alt="logo"><h1>AR-ROBITU FOUNDATION</h1><div class="mu">Unity, Trust &amp; Sustainable Economic Development</div></div>
+ return `<div class="card hero"><img src="${esc(logoUrl())}" alt="logo"><h1>AR-ROBITU FOUNDATION</h1><div class="mu">Unity, Trust &amp; Sustainable Economic Development</div></div>
  <div class="card"><h2>${T('আমাদের পরিচয়','About us')}</h2><p style="font-size:14.5px">${T('AR-ROBITU FOUNDATION একটি ইসলামী অর্থনৈতিক উন্নয়ন, পারস্পরিক সহযোগিতা, সঞ্চয় ও হালাল বিনিয়োগভিত্তিক সংগঠন। সদস্যদের সম্মিলিত প্রচেষ্টা, আর্থিক স্বচ্ছতা ও পারস্পরিক আস্থার মাধ্যমে আমরা একটি টেকসই প্রতিষ্ঠান গড়ে তুলছি।','AR-ROBITU FOUNDATION is built on Islamic economic development, mutual cooperation, savings and halal investment. Through collective effort, financial transparency and mutual trust we are building a sustainable institution.')}</p></div>
  ${links()}
  <div class="row"><div class="card"><div class="mu">${T('মোট সদস্য','Members')}</div><div class="big">${s.members}</div></div><div class="card"><div class="mu">${T('চলমান প্রকল্প','Ongoing projects')}</div><div class="big">${s.ongoing}</div></div></div>
@@ -205,7 +206,8 @@ async set(){
  const b=S.cfg.bkash||{},L=S.cfg.links||[],p=S.cfg.publicity||{};
  return `<div class="card"><h2>${T('বিকাশ ও অর্থ সম্পাদক','bKash & treasurer')}</h2>${field('b_n',T('বিকাশ নম্বর','bKash number'),'tel',b.number||'')+field('b_t',T('অর্থ সম্পাদকের নাম','Treasurer name'),'text',b.treasurer||'')}</div>
  <div class="card"><h2>${T('দুটি লিংক','Two links')}</h2>${field('l_t1',T('লিংক ১ নাম','Link 1 title'),'text',L[0]?.t||'')+field('l_u1',T('লিংক ১ ঠিকানা (https://...)','Link 1 URL (https://...)'),'url',L[0]?.u||'')+field('l_t2',T('লিংক ২ নাম','Link 2 title'),'text',L[1]?.t||'')+field('l_u2',T('লিংক ২ ঠিকানা (https://...)','Link 2 URL (https://...)'),'url',L[1]?.u||'')}</div>
- <div class="card"><h2>${T('অ্যাডমিন প্যানেলের পরিচয়','Admin panel identity')}</h2>${field('pr_t',T('পদবি','Title'),'text',p.title||'তথ্যপ্রচার সম্পাদক')+field('pr_n',T('নাম','Name'),'text',p.name||'মো: আব্দুর রহমান হৃদয়')}<label>${T('নতুন ছবি (ঐচ্ছিক)','New photo (optional)')}</label><input id="pr_f" type="file" accept="image/*"></div>
+ <div class="card"><h2>${T('ফাউন্ডেশনের লোগো','Foundation logo')}</h2><div style="display:flex;gap:12px;align-items:center">${img(logoUrl(),'av')}<div class="mu">${T('নতুন লোগো বাছাই করুন (ঐচ্ছিক)','Choose a new logo (optional)')}</div></div><input id="lg_f" type="file" accept="image/*"></div>
+ <div class="card"><h2>${T('অ্যাডমিন প্যানেলের পরিচয়','Admin panel identity')}</h2>${field('pr_t',T('পদবি','Title'),'text',p.title||'তথ্যপ্রচার সম্পাদক')+field('pr_n',T('নাম','Name'),'text',p.name||'মো: আব্দুর রহমান হৃদয়')}<label>${T('আপনার ছবি (ঐচ্ছিক)','Your photo (optional)')}</label><input id="pr_f" type="file" accept="image/*"></div>
  <button class="btn" onclick="A.saveset()">${T('সংরক্ষণ','Save')}</button>`}
 };
 
@@ -246,8 +248,8 @@ addp(){const gp=g('p_g').value,n=val('p_n');if(!n)return toast(T('নাম দ�
 delp(id){run(()=>sb.from('people').delete().eq('id',id))},
 addm(){run(async()=>{const fs=g('m_f').files;if(!fs.length)throw new Error(T('ছবি বাছাই করুন','Choose photos'));for(const f of fs){const url=await upload(f,'media');const r=await sb.from('media_items').insert({album:g('m_al').value,caption:val('m_c'),url});if(r.error)throw r.error}})},
 delm(id){run(()=>sb.from('media_items').delete().eq('id',id))},
-saveset(){run(async()=>{const links=[1,2].map(i=>({t:val('l_t'+i),u:val('l_u'+i)})).filter(x=>x.u);const old=S.cfg.publicity||{};let photo=old.photo||'assets/publicity.jpg';const f=g('pr_f').files[0];if(f)photo=await upload(f,'admin');
-  for(const [k,v] of [['bkash',{number:val('b_n'),treasurer:val('b_t')}],['links',links],['publicity',{title:val('pr_t'),name:val('pr_n'),photo}]]){const r=await set1(k,v);if(r.error)throw r.error}
+saveset(){run(async()=>{const links=[1,2].map(i=>({t:val('l_t'+i),u:val('l_u'+i)})).filter(x=>x.u);const old=S.cfg.publicity||{};let photo=old.photo||'assets/publicity.jpg';const f=g('pr_f').files[0];if(f)photo=await upload(f,'admin');const lf=g('lg_f').files[0];let logo=S.cfg.logo||{};if(lf)logo={url:await upload(lf,'admin')};
+  for(const [k,v] of [['bkash',{number:val('b_n'),treasurer:val('b_t')}],['links',links],['publicity',{title:val('pr_t'),name:val('pr_n'),photo}],['logo',logo]]){const r=await set1(k,v);if(r.error)throw r.error}
   await loadCfg()})}
 };
 boot();

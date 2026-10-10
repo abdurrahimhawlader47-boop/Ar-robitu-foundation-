@@ -7,7 +7,7 @@
 <meta name="description" content="Unity, Trust & Sustainable Economic Development">
 <link rel="icon" href="assets/logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <style>
 :root{--bg:#DDF1FC;--g:rgba(255,255,255,.52);--gl:rgba(255,255,255,.8);--ink:#0D2B40;--mu:#4F7088;--sky:#3AAEF0;--deep:#0A5A8E;--soft:rgba(58,174,240,.16);--o1:#7CCBF7;--o2:#B9E5FC;--o3:#5AB8EE;--ok:#0F7A5C;--wn:#9A5F12;--er:#B3261E}
@@ -53,7 +53,7 @@ const C=window.ARF||{};
 const sb=supabase.createClient(C.URL,C.KEY);
 const $=s=>document.querySelector(s), g=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let S={l:'bn',user:null,prof:null,cfg:{},tab:'home',sub:'apps',al:'',sm:null};
+let S={l:'bn',user:null,prof:null,cfg:{},err:'',tab:'home',sub:'apps',al:'',sm:null};
 const T=(b,e)=>S.l=='en'?e:b;
 const tk=n=>'৳ '+Number(n||0).toLocaleString(S.l=='en'?'en-US':'bn-BD');
 const val=id=>(g(id)?.value||'').trim();
@@ -72,7 +72,7 @@ const field=(id,l,t='text',v='')=>`<label>${l}</label><input id="${id}" type="${
 async function shrink(f,max=1000){const u=URL.createObjectURL(f);const im=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u});const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);return new Promise(r=>c.toBlob(r,'image/jpeg',.85))}
 async function upload(f,folder){const path=`${folder}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.jpg`;const b=await shrink(f);const {error}=await sb.storage.from('public-media').upload(path,b,{contentType:'image/jpeg'});if(error)throw error;return sb.storage.from('public-media').getPublicUrl(path).data.publicUrl}
 
-async function loadCfg(){try{const d=await q(sb.from('site_settings').select('*'));S.cfg=Object.fromEntries(d.map(x=>[x.key,x.value]))}catch(e){S.cfg={}}}
+async function loadCfg(){try{const d=await q(sb.from('site_settings').select('*'));S.cfg=Object.fromEntries(d.map(x=>[x.key,x.value]));S.err=''}catch(e){S.cfg={};S.err=e.message||String(e)}}
 async function loadProf(){S.prof=null;if(!S.user)return;try{S.prof=await q(sb.from('profiles').select('*').eq('id',S.user.id).single())}catch(e){}}
 async function boot(){
  if(!C.URL||C.URL.includes('YOUR-PROJECT')){$('#app').innerHTML='<div class="card"><b>config.js</b> ফাইলে Supabase URL ও KEY বসান / Fill in config.js</div>';return}
@@ -90,7 +90,7 @@ function tabsList(){
 function shell(){
  const t=tabsList();if(!t.find(x=>x[0]==S.tab)&&!['login','acode'].includes(S.tab))S.tab='home';
  $('#app').innerHTML=`<div class="top"><div class="brand"><img src="assets/logo.jpg" alt=""><div><b>AR-ROBITU FOUNDATION</b><small>Unity, Trust &amp; Sustainable Economic Development</small></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button onclick="A.lang()">${S.l=='bn'?'English':'বাংলা'}</button>${S.user?`<button onclick="A.out()">${T('লগ আউট','Log out')}</button>`:`<button onclick="A.go('login')">${T('লগইন','Log in')}</button><button onclick="A.go('acode')">${T('অ্যাডমিন','Admin')}</button>`}</div></div>
- <div class="tabs">${t.map(x=>`<button class="${S.tab==x[0]?'on':''}" onclick="A.go('${x[0]}')">${x[1]}</button>`).join('')}</div><div id="v"><div class="card">…</div></div>`;
+ ${S.err?`<div class="card" style="border-color:var(--er)"><b>${T('ডেটাবেজ সংযোগে সমস্যা','Database connection problem')}</b><div class="mu">${esc(S.err)}</div><div class="mu">${T('setup.sql Run হয়েছে কি না এবং config.js-এর URL/KEY ঠিক আছে কি না দেখুন।','Check that setup.sql was run and the URL/KEY in config.js are correct.')}</div></div>`:''}<div class="tabs">${t.map(x=>`<button class="${S.tab==x[0]?'on':''}" onclick="A.go('${x[0]}')">${x[1]}</button>`).join('')}</div><div id="v"><div class="card">…</div></div>`;
  show()}
 async function show(){try{$('#v').innerHTML=await V[S.tab]()}catch(e){$('#v').innerHTML=`<div class="card">${esc(e.message||e)}</div>`}}
 const links=()=>(S.cfg.links||[]).filter(l=>/^https?:\/\//i.test(l.u||'')).map(l=>`<a class="btn s" style="display:block;text-align:center;margin:0 0 10px" href="${esc(l.u)}" target="_blank" rel="noopener noreferrer">${esc(l.t||l.u)}</a>`).join('');
@@ -163,7 +163,7 @@ async apps(){
  <button class="btn" data-id="${p.id}" onclick="A.approve(this.dataset.id)">${T('অনুমোদন','Approve')}</button><button class="btn s" data-id="${p.id}" onclick="A.reject(this.dataset.id)">${T('বাতিল','Reject')}</button></div>`).join('')||`<p class="mu">${T('কোনো নতুন আবেদন নেই','No pending applications')}</p>`},
 
 async pay(){
- const C2=await q(sb.from('contributions').select('*, profiles(full_name,member_no)').eq('status','submitted').order('created_at'));
+ const C2=await q(sb.from('contributions').select('*, profiles!member_id(full_name,member_no)').eq('status','submitted').order('created_at'));
  return C2.map(c=>`<div class="card"><b>${esc(c.profiles.full_name)}</b> <span class="mu">${esc(c.profiles.member_no)}</span><div>${c.month.slice(0,7)} · ${tk(c.amount)}</div><div class="mu">${T('ট্রানজ্যাকশন আইডি','Transaction ID')}: ${esc(c.note||'-')}</div><button class="btn" data-id="${c.id}" onclick="A.verify(this.dataset.id)">${T('যাচাই করুন','Verify')}</button><button class="btn s" data-id="${c.id}" onclick="A.rejpay(this.dataset.id)">${T('বাতিল','Reject')}</button></div>`).join('')||`<p class="mu">${T('যাচাইয়ের জন্য কিছু নেই','Nothing to verify')}</p>`},
 
 async acct(){
@@ -209,7 +209,7 @@ async set(){
  <button class="btn" onclick="A.saveset()">${T('সংরক্ষণ','Save')}</button>`}
 };
 
-const run=async(f,msg)=>{try{const r=await f();if(r&&r.error)throw r.error;toast(msg||T('সম্পন্ন হয়েছে','Done'));await show()}catch(e){toast(e.message||String(e))}};
+const run=async(f,msg)=>{try{const r=await f();if(r&&r.error)throw r.error;toast(msg||T('সম্পন্ন হয়েছে','Done'));await show()}catch(e){const m=e.message||String(e);toast(/duplicate/i.test(m)?T('এই মাসের জমা আগেই দেওয়া হয়েছে','Already submitted for this month'):m)}};
 const set1=(k,v)=>sb.from('site_settings').upsert({key:k,value:v});
 
 const A={
@@ -220,7 +220,7 @@ album(a){S.al=a;show()},
 month(v){S.sm=v;show()},
 async out(){await sb.auth.signOut();S.user=null;S.prof=null;S.tab='home';shell()},
 async login(){try{const {error}=await sb.auth.signInWithPassword({email:val('l_e'),password:val('l_p')});if(error)throw error;S.tab='home';await new Promise(r=>setTimeout(r,300));const {data}=await sb.auth.getSession();S.user=data.session?.user;await loadProf();shell()}catch(e){toast(e.message)}},
-async acode(){try{const {error}=await sb.auth.signInWithPassword({email:C.ADMIN_EMAIL,password:val('a_c')});if(error)throw new Error(T('কোড সঠিক নয়','Incorrect code'));const {data}=await sb.auth.getSession();S.user=data.session.user;await loadProf();if(!isStaff()){await sb.auth.signOut();S.user=null;S.prof=null;throw new Error(T('এই অ্যাকাউন্টে অ্যাডমিন অনুমতি নেই','This account has no admin permission'))}S.tab='adm';shell()}catch(e){toast(e.message)}},
+async acode(){try{const x=val('a_c');if(!x)return toast(T('কোড লিখুন','Enter the code'));const base=x.replace(/\.+$/,'');let ok=false,last=null;for(const p of [...new Set([x,base,base+'.'])]){const {error}=await sb.auth.signInWithPassword({email:C.ADMIN_EMAIL,password:p});if(!error){ok=true;break}last=error}if(!ok)throw new Error(T('কোড সঠিক নয় বা অ্যাডমিন ইউজার তৈরি হয়নি','Wrong code or admin user not created')+' ('+last.message+')');const {data}=await sb.auth.getSession();S.user=data.session.user;await loadProf();if(!isStaff()){await sb.auth.signOut();S.user=null;S.prof=null;throw new Error(T('এই অ্যাকাউন্টে অ্যাডমিন অনুমতি নেই','This account has no admin permission'))}S.tab='adm';shell()}catch(e){toast(e.message)}},
 async register(){
  const d={full_name:val('r_name'),father_name:val('r_father'),mother_name:val('r_mother'),date_of_birth:val('r_dob'),phone:val('r_phone'),address:val('r_addr'),occupation:val('r_job'),national_id:val('r_nid'),emergency_contact:val('r_emg'),nominee_name:val('r_nom'),nominee_relation:val('r_rel')};
  if(!d.full_name||!d.phone||!val('r_email')||val('r_pass').length<6)return toast(T('নাম, মোবাইল, ইমেইল ও ৬+ অক্ষরের পাসওয়ার্ড দিন','Enter name, mobile, email and a 6+ character password'));
